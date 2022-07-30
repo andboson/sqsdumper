@@ -73,10 +73,6 @@ func NewSQSPoller(params SQSParam) (SQSPoller, error) {
 		return nil, errors.Wrap(err, "error getting total number of messages from AWS SQS queue URL")
 	}
 
-	if s.stopOnTotal && s.totalMessages == 0 {
-		return s, nil
-	}
-
 	return s, nil
 }
 

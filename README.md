@@ -34,3 +34,9 @@ GLOBAL OPTIONS:
 ```shell
 make all
 ```
+
+### See also
+
+ * https://github.com/mercury2269/sqsmover
+ * https://github.com/prashanthpai/sqscat
+ * https://github.com/farbodsalimi/go-sqs-wrapper
