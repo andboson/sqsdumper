@@ -16,7 +16,7 @@ generate:
 	go generate -x ./internal/...
 
 build:
-	CGO_ENABLED=0 GOOS=${GOOS} go build -ldflags "-X=main.Revision=${REVISION} -X=main.Version=${VERSION}" -o ./bin/httplogger ./cmd/main.go
+	CGO_ENABLED=0 GOOS=${GOOS} go build -ldflags "-X=main.Revision=${REVISION} -X=main.Version=${VERSION}" -o ./sqsdumper ./cmd/main.go
 
 lint:
 	revive --config=revive.toml --formatter=unix ./...
@@ -29,5 +29,5 @@ test:
 	go test -tags="unit" -coverprofile=coverage.out -covermode=count ./...
 	go tool cover -func=coverage.out
 
-all: build
+all: generate dep test build
 
