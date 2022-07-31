@@ -2,6 +2,7 @@ package aws
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
@@ -120,6 +121,7 @@ func (s *sqsPoller) PollMessages(ctx context.Context, messageHandler MessageHand
 			}
 
 			if processed >= s.totalMessages && s.stopOnTotal {
+				fmt.Printf("\n")
 				s.logger.Log().Msg("all messages processed")
 				return nil
 			}

@@ -92,7 +92,7 @@ func main() {
 			total := poller.GetTotal()
 
 			defer func() {
-				fmt.Printf("\n === total processed: %d", total)
+				l.Log().Msgf(" === total processed: %d", total)
 			}()
 
 			return poller.PollMessages(ctx.Context, commander.ProcessMessages(ctx.Context))
