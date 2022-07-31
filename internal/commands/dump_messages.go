@@ -73,7 +73,11 @@ func (p *SQSDumper) processMessage(_ context.Context, msg types.Message) error {
 	}
 
 	stringed = strings.ReplaceAll(stringed, `\"`, `"`)
-	fmt.Printf("\n%s", stringed)
+	if len(stringed) >= 2 {
+		fmt.Println(stringed[1 : len(stringed)-1])
+	} else {
+		fmt.Println(stringed)
+	}
 
 	return nil
 }

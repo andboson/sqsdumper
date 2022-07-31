@@ -2,10 +2,20 @@
 
 Dump AWS SQS messages to the output
 
-Example:
-
+### Usage
 ```shell
 <AWS_PROFILE=specific_profile> sqsdumper -s your-queue-dead-letter-queue 
+```
+with `jq`
+
+```shell
+<AWS_PROFILE=specific_profile> sqsdumper -s your-queue-dead-letter-queue | jq .foo
+```
+
+get in json_path (if no `jq` installed)
+
+```shell
+<AWS_PROFILE=specific_profile> sqsdumper -s your-queue-dead-letter-queue -jp foo
 ```
 
 
