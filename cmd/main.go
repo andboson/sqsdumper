@@ -17,8 +17,10 @@ var Version string
 
 func main() {
 	var (
+		stopAfter     int
 		stopOnTotal   *bool
 		deleteMessage bool
+		rawMessage    bool
 		queueName     string
 		jsonPath      string
 	)
@@ -35,10 +37,22 @@ func main() {
 				Destination: stopOnTotal,
 				DefaultText: "true",
 			},
+			&cli.IntFlag{
+				Name:        "stopAfter",
+				Usage:       "stop after N messages processed",
+				Destination: &stopAfter,
+				DefaultText: "0",
+			},
 			&cli.BoolFlag{
 				Name:        "deleteMessage",
 				Usage:       "delete received messages",
 				Destination: &deleteMessage,
+			},
+			&cli.BoolFlag{
+				Name:        "raw",
+				Usage:       "dump entire raw messages",
+				Destination: &rawMessage,
+				DefaultText: "false",
 			},
 			&cli.StringFlag{
 				Name:        "queueName",
@@ -56,7 +70,12 @@ func main() {
 		},
 		Action: func(ctx *cli.Context) error {
 			l := zerolog.New(os.Stderr).With().Timestamp().Logger()
-			commander := commands.NewSQSDumper(l, deleteMessage, jsonPath)
+			commander := commands.NewSQSDumper(commands.SQSDumperParams{
+				Logger:        l,
+				DeleteMessage: deleteMessage,
+				RawMessage:    rawMessage,
+				JsonPath:      jsonPath,
+			})
 
 			// Init AWS
 			client := aws.NewAWSClient()
@@ -82,6 +101,8 @@ func main() {
 						WaitTimeSeconds:         2,
 					},
 					StopOnTotal: stop,
+					StopAfter:   stopAfter,
+
 					CounterChan: nil,
 				},
 			)
