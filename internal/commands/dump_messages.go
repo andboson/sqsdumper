@@ -15,19 +15,28 @@ import (
 	"github.com/sinhashubham95/jsonic"
 )
 
+type SQSDumperParams struct {
+	Logger        zerolog.Logger
+	DeleteMessage bool
+	RawMessage    bool
+	JsonPath      string
+}
+
 // SQSDumper is a command to print a message content
 type SQSDumper struct {
 	logger        zerolog.Logger
 	deleteMessage bool
+	rawMessage    bool
 	jsonPath      string
 }
 
 // NewSQSDumper returns a new instance
-func NewSQSDumper(l zerolog.Logger, deleteMessage bool, getPath string) SQSDumper {
+func NewSQSDumper(p SQSDumperParams) SQSDumper {
 	return SQSDumper{
-		logger:        l,
-		deleteMessage: deleteMessage,
-		jsonPath:      getPath,
+		logger:        p.Logger,
+		deleteMessage: p.DeleteMessage,
+		rawMessage:    p.RawMessage,
+		jsonPath:      p.JsonPath,
 	}
 }
 
@@ -68,6 +77,12 @@ func (p *SQSDumper) processMessage(_ context.Context, msg types.Message) error {
 	if eventMessage.Message != nil {
 		stringed = string(*eventMessage.Message)
 	}
+
+	if p.rawMessage {
+		fmt.Println(stringed)
+		return nil
+	}
+
 	if p.jsonPath != "" {
 		return p.printByPath(stringed)
 	}
