@@ -31,6 +31,7 @@ type sqsPoller struct {
 	cfg           ConfigQueue
 	queueURL      *string
 	stopOnTotal   bool
+	stopAfter     int
 	totalMessages int
 	checkReceived map[string]struct{}
 	counterChan   chan int
@@ -42,6 +43,7 @@ type SQSParam struct {
 	Logger      zerolog.Logger
 	QueueConfig ConfigQueue
 	StopOnTotal bool
+	StopAfter   int
 	CounterChan chan int
 }
 
@@ -53,6 +55,7 @@ func NewSQSPoller(params SQSParam) (SQSPoller, error) {
 		cfg:           params.QueueConfig,
 		stopOnTotal:   params.StopOnTotal,
 		counterChan:   params.CounterChan,
+		stopAfter:     params.StopAfter,
 		checkReceived: map[string]struct{}{},
 	}
 	queueURL, err := s.fetchQueueURL(context.Background(), s.cfg.QueueName)
@@ -118,6 +121,12 @@ func (s *sqsPoller) PollMessages(ctx context.Context, messageHandler MessageHand
 					}
 				}
 				s.checkReceived[*message.MessageId] = struct{}{}
+			}
+
+			if s.stopAfter != 0 && processed >= s.stopAfter {
+				fmt.Printf("\n")
+				s.logger.Log().Msgf("stopped after %d messages processed", processed)
+				return nil
 			}
 
 			if processed >= s.totalMessages && s.stopOnTotal {
