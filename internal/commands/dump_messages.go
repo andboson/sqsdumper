@@ -74,7 +74,7 @@ func (p *SQSDumper) processMessage(_ context.Context, msg types.Message) error {
 	}
 
 	stringed := *msg.Body
-	if eventMessage.Message != nil {
+	if msg.Body == nil {
 		stringed = string(*eventMessage.Message)
 	}
 
