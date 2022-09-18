@@ -73,12 +73,14 @@ func (p *SQSDumper) processMessage(_ context.Context, msg types.Message) error {
 		return errors.Wrap(err, "error parsing the incoming message")
 	}
 
+
 	if p.rawMessage {
 		fmt.Println(*msg.Body)
 		return nil
 	}
 
 	stringed := string(*eventMessage.Message)
+
 	if p.jsonPath != "" {
 		return p.printByPath(stringed)
 	}
