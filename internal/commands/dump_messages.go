@@ -74,7 +74,7 @@ func (p *SQSDumper) processMessage(_ context.Context, msg types.Message) error {
 	}
 
 
-	if p.rawMessage {
+	if p.rawMessage || eventMessage.Message == nil {
 		fmt.Println(*msg.Body)
 		return nil
 	}
