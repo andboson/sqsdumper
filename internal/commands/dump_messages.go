@@ -73,8 +73,7 @@ func (p *SQSDumper) processMessage(_ context.Context, msg types.Message) error {
 		return errors.Wrap(err, "error parsing the incoming message")
 	}
 
-
-	if p.rawMessage {
+	if p.rawMessage || eventMessage.Message == nil {
 		fmt.Println(*msg.Body)
 		return nil
 	}
