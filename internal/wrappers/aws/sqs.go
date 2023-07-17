@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
+	"github.com/schollz/progressbar/v3"
 )
 
 // MessageHandler represents a single SQS message handler
@@ -35,6 +36,7 @@ type sqsPoller struct {
 	totalMessages int
 	checkReceived map[string]struct{}
 	counterChan   chan int
+	bar           *progressbar.ProgressBar
 }
 
 // SQSParam holds SQSPoller params
@@ -77,6 +79,8 @@ func NewSQSPoller(params SQSParam) (SQSPoller, error) {
 		return nil, errors.Wrap(err, "error getting total number of messages from AWS SQS queue URL")
 	}
 
+	s.bar = progressbar.Default(int64(s.totalMessages), "Processing..")
+
 	return s, nil
 }
 
@@ -114,25 +118,19 @@ func (s *sqsPoller) PollMessages(ctx context.Context, messageHandler MessageHand
 				if err := messageHandler(s, message); err != nil {
 					s.logger.Err(err).Msg("processing error")
 				}
-				if _, ok := s.checkReceived[*message.MessageId]; !ok {
-					processed++
-					if s.counterChan != nil {
-						s.counterChan <- 1
-					}
+				s.bar.Add(1)
+
+				if s.stopAfter != 0 && processed >= s.stopAfter {
+					fmt.Printf("\n")
+					s.logger.Log().Msgf("stopped after %d messages processed", processed)
+					return nil
 				}
-				s.checkReceived[*message.MessageId] = struct{}{}
-			}
 
-			if s.stopAfter != 0 && processed >= s.stopAfter {
-				fmt.Printf("\n")
-				s.logger.Log().Msgf("stopped after %d messages processed", processed)
-				return nil
-			}
-
-			if processed >= s.totalMessages && s.stopOnTotal {
-				fmt.Printf("\n")
-				s.logger.Log().Msg("all messages processed")
-				return nil
+				if s.bar.IsFinished() && s.stopOnTotal {
+					fmt.Printf("\n")
+					s.logger.Log().Msg("all messages processed")
+					return nil
+				}
 			}
 		}
 	}

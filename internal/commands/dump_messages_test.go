@@ -34,7 +34,14 @@ func TestSQSDumper_ProcessMessagesFull(t *testing.T) {
 	poller.EXPECT().DeleteMessage(gomock.Any(), gomock.Any())
 	poller.EXPECT().GetQueueURL().Return(ptr.String("url"))
 
-	dumper := NewSQSDumper(log, true, "")
+	params := SQSDumperParams{
+		Logger:        log,
+		DeleteMessage: true,
+		RawMessage:    true,
+		JsonPath:      "",
+	}
+
+	dumper := NewSQSDumper(params)
 	err := dumper.ProcessMessages(ctx)(poller, msg)
 	assert.NoError(t, err)
 }
@@ -49,7 +56,13 @@ func TestSQSDumper_ProcessMessagesSimple(t *testing.T) {
 	}
 
 	poller := mock_aws.NewMockSQSPoller(ctrl)
-	dumper := NewSQSDumper(log, false, "foo")
+	params := SQSDumperParams{
+		Logger:        log,
+		DeleteMessage: false,
+		RawMessage:    false,
+		JsonPath:      "",
+	}
+	dumper := NewSQSDumper(params)
 	err := dumper.ProcessMessages(ctx)(poller, msg)
 	assert.NoError(t, err)
 }

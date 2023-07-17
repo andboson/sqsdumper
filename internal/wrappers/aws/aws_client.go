@@ -11,8 +11,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:generate mockgen -source=$GOFILE -destination=../../mocks/mock_aws/mock_$GOFILE
 // Client represents AWS client
+//
+//go:generate mockgen -source=$GOFILE -destination=../../mocks/mock_aws/mock_$GOFILE
 type Client interface {
 	LoadDefaultConfig(ctx context.Context) (aws.Config, error)
 	LoadLocalConfig(ctx context.Context) (aws.Config, error)
