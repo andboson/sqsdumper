@@ -19,7 +19,7 @@ type EventMessage struct {
 	UnsubscribeURL   string           `json:"UnsubscribeURL"`
 }
 
-//ParseEventMessage parses aws types.Message body to an EventMessage
+// ParseEventMessage parses aws types.Message body to an EventMessage
 func ParseEventMessage(body string) (EventMessage, error) {
 	var result EventMessage
 

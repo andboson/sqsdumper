@@ -6,8 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 )
 
-//go:generate mockgen -source=$GOFILE -destination=../../mocks/mock_aws/mock_$GOFILE
 // SQSAPI represents AWS SDK SQS methods
+//
+//go:generate mockgen -source=$GOFILE -destination=../../mocks/mock_aws/mock_$GOFILE
 type SQSAPI interface {
 	GetQueueUrl(ctx context.Context,
 		params *sqs.GetQueueUrlInput,
